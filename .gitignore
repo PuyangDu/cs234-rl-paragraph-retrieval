@@ -1,0 +1,28 @@
+__pycache__/
+*.pyc
+
+# Model checkpoints & large data
+*.pt
+checkpoints_blind/*.json
+checkpoints_blind/*.csv
+checkpoints_blind/*.html
+checkpoints_blind/*.pdf
+checkpoints_blind/*.txt
+
+# Keep only .png plots (referenced by README)
+# checkpoints_blind/*.png  <-- NOT ignored
+
+# Evaluation outputs
+results/
+
+# OS files
+.DS_Store
+
+# Environment
+.env
+.venv/
+venv/
+
+# Editor / IDE
+.vscode/
+.idea/
