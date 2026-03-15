@@ -3,13 +3,10 @@ __pycache__/
 
 # Model checkpoints & large data
 *.pt
-checkpoints_blind/*.json
-checkpoints_blind/*.csv
-checkpoints_blind/*.html
-checkpoints_blind/*.pdf
-checkpoints_blind/*.txt
+checkpoints_blind/split.json
+checkpoints_blind/ppo_trajectories.json
 
-# Keep only .png plots (referenced by README)
+# Keep plots, CSV, txt, html, smaller JSON (train_metrics.json)
 # checkpoints_blind/*.png  <-- NOT ignored
 
 # Evaluation outputs
