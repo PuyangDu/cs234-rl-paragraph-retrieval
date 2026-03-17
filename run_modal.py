@@ -56,7 +56,7 @@ ollama_image = (
             "**/.git/**",
             "**/__pycache__/**",
             "**/node_modules/**",
-            "results/**",
+            "llm_eval_results/**",
             "run_modal.py",
         ],
     )
@@ -79,7 +79,7 @@ model_volume = modal.Volume.from_name("ollama-models-store", create_if_missing=T
 @app.cls(
     gpu="A10G",
     volumes={MODEL_DIR: model_volume},
-    timeout=7200,
+    timeout=86400,
     memory=32768,
 )
 class PipelineRunner:
@@ -263,7 +263,7 @@ class PipelineRunner:
         sys.path.insert(0, "/root/project")
 
         ckpt_dir = "checkpoints_blind"
-        output_dir = "results"
+        output_dir = "llm_eval_results"
 
         # Restore checkpoints from volume (bc_model.pt, ppo_best.pt,
         # sft_dpo_model.pt, split.json)
@@ -276,6 +276,14 @@ class PipelineRunner:
         else:
             print(f"WARNING: {vol_ckpt} not found on volume. "
                   f"Run train_only.py locally first and upload checkpoints.")
+
+        # Restore previous eval results (prefilter caches etc.)
+        vol_results = os.path.join(MODEL_DIR, "cs234_results_eval")
+        if os.path.isdir(vol_results):
+            os.makedirs(output_dir, exist_ok=True)
+            subprocess.run(["cp", "-r", vol_results + "/.", output_dir + "/"],
+                           check=False)
+            print(f"Restored eval cache from volume: {vol_results}")
 
         from eval_llm import main as eval_main
         eval_main(small=small)
@@ -342,9 +350,15 @@ def download_results_from_volume(blind: bool = False, run_name: str = ""):
                                 out[key] = base64.b64encode(data).decode()
         print(f"Found {len(out)} files on volume for run_name={run_name}")
         return out
-    vol_dir = os.path.join(MODEL_DIR, VOLUME_RESULTS_DIR_BLIND if blind else VOLUME_RESULTS_DIR)
-    if not os.path.isdir(vol_dir):
-        print(f"No results dir on volume: {vol_dir}")
+    # Try eval-specific results first, then fall back to standard results dir
+    vol_dir_eval = os.path.join(MODEL_DIR, "cs234_results_eval")
+    vol_dir_std = os.path.join(MODEL_DIR, VOLUME_RESULTS_DIR_BLIND if blind else VOLUME_RESULTS_DIR)
+    if os.path.isdir(vol_dir_eval):
+        vol_dir = vol_dir_eval
+    elif os.path.isdir(vol_dir_std):
+        vol_dir = vol_dir_std
+    else:
+        print(f"No results dir on volume: tried {vol_dir_eval} and {vol_dir_std}")
         return {}
     for name in sorted(os.listdir(vol_dir)):
         path = os.path.join(vol_dir, name)
@@ -418,7 +432,7 @@ def download_results(blind: bool = False, run_name: str = ""):
     if not results:
         print("No results found on volume. Run the pipeline first (e.g. modal run run_modal.py --blind).")
         return
-    os.makedirs("results", exist_ok=True)
+    os.makedirs("llm_eval_results", exist_ok=True)
     import base64
     for filepath, content in results.items():
         if filepath.endswith(".pt"):
@@ -428,7 +442,7 @@ def download_results(blind: bool = False, run_name: str = ""):
             with open(filepath, "w") as f:
                 f.write(content)
         print(f"Saved: {filepath}")
-    print("\nDone! Check results/ for outputs.")
+    print("\nDone! Check llm_eval_results/ for outputs.")
 
 
 @app.local_entrypoint()
@@ -476,7 +490,7 @@ def run_eval(small: bool = False):
                     f.write(content)
             print(f"Saved: {filepath}")
 
-    print("\nDone! Check results/ for LLM evaluation outputs.")
+    print("\nDone! Check llm_eval_results/ for LLM evaluation outputs.")
 
 
 @app.function(image=ollama_image, volumes={MODEL_DIR: model_volume})

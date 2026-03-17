@@ -1,0 +1,101 @@
+{
+  "timestamp": "2026-03-17T07:25:35.364403",
+  "config": {
+    "n_target": 60,
+    "budget": 5,
+    "llm": "qwen3:8b",
+    "blind": true
+  },
+  "wiki2": {
+    "Greedy (3)": {
+      "strategy": "Greedy (3)",
+      "accuracy": 0.4666666666666667,
+      "correct": 28,
+      "total": 60,
+      "avg_reads": 3.0,
+      "avg_supporting_found": 1.15,
+      "precision": 0.38333333333333336,
+      "recall": 0.575,
+      "f1": 0.4600000000000001
+    },
+    "SFT+DPO": {
+      "strategy": "SFT+DPO",
+      "accuracy": 0.3,
+      "correct": 18,
+      "total": 60,
+      "avg_reads": 1.0,
+      "avg_supporting_found": 0.9333333333333333,
+      "precision": 0.9333333333333333,
+      "recall": 0.4666666666666667,
+      "f1": 0.6222222222222223
+    },
+    "BC": {
+      "strategy": "BC",
+      "accuracy": 0.5833333333333334,
+      "correct": 35,
+      "total": 60,
+      "avg_reads": 2.066666666666667,
+      "avg_supporting_found": 1.4666666666666666,
+      "precision": 0.7096774193548387,
+      "recall": 0.7333333333333333,
+      "f1": 0.7213114754098361
+    },
+    "BC+PPO": {
+      "strategy": "BC+PPO",
+      "accuracy": 0.6166666666666667,
+      "correct": 37,
+      "total": 60,
+      "avg_reads": 2.0,
+      "avg_supporting_found": 1.4666666666666666,
+      "precision": 0.7333333333333333,
+      "recall": 0.7333333333333333,
+      "f1": 0.7333333333333333
+    }
+  },
+  "hotpot": {
+    "Greedy (3)": {
+      "strategy": "Greedy (3)",
+      "accuracy": 0.5,
+      "correct": 30,
+      "total": 60,
+      "avg_reads": 3.0,
+      "avg_supporting_found": 1.0166666666666666,
+      "precision": 0.3388888888888889,
+      "recall": 0.5083333333333333,
+      "f1": 0.4066666666666667
+    },
+    "SFT+DPO": {
+      "strategy": "SFT+DPO",
+      "accuracy": 0.5166666666666667,
+      "correct": 31,
+      "total": 60,
+      "avg_reads": 1.0,
+      "avg_supporting_found": 0.7833333333333333,
+      "precision": 0.7833333333333333,
+      "recall": 0.39166666666666666,
+      "f1": 0.5222222222222223
+    },
+    "BC": {
+      "strategy": "BC",
+      "accuracy": 0.5666666666666667,
+      "correct": 34,
+      "total": 60,
+      "avg_reads": 2.066666666666667,
+      "avg_supporting_found": 1.2,
+      "precision": 0.5806451612903226,
+      "recall": 0.6,
+      "f1": 0.5901639344262295
+    },
+    "BC+PPO": {
+      "strategy": "BC+PPO",
+      "accuracy": 0.5833333333333334,
+      "correct": 35,
+      "total": 60,
+      "avg_reads": 2.033333333333333,
+      "avg_supporting_found": 1.2166666666666666,
+      "precision": 0.5983606557377049,
+      "recall": 0.6083333333333333,
+      "f1": 0.6033057851239669
+    }
+  }
+}

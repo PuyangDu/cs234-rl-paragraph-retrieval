@@ -109,7 +109,7 @@ As a comparison method, we train a policy using a classical offline preference l
 - This generates a large set of (state, chosen, rejected) tuples with already-read paragraphs masked
 - Train with the DPO loss:
 
-$$\mathcal{L}_{\text{DPO}} = -\log \sigma\!\Big(\beta \big(\log \pi_\theta(a_w|s) - \log \pi_{\text{ref}}(a_w|s) - \log \pi_\theta(a_l|s) + \log \pi_{\text{ref}}(a_l|s)\big)\Big)$$
+$$\mathcal{L}_{\text{DPO}} = -\log \sigma\Big(\beta \big(\log \pi_\theta(a_w|s) - \log \pi_{\text{ref}}(a_w|s) - \log \pi_\theta(a_l|s) + \log \pi_{\text{ref}}(a_l|s)\big)\Big)$$
 
 - $\beta = 0.1$ (preference strength), learning rate $5 \times 10^{-5}$, batch size 32
 - 15 epochs with early stopping on dev loss (patience = 5), gradient clipping at norm 1.0
@@ -216,14 +216,14 @@ End-to-end evaluation using Qwen3-8B (via Ollama) on **60 hard questions** pre-f
 
 | Strategy | Answer Acc | Retrieval F1 | Reads |
 |---|---|---|---|
-| Best Greedy | 58% | 40.2% | 3.0 |
-| SFT + DPO | 53% | 51.7% | 1.0 |
-| BC | 67% | 74.8% | 2.5 |
-| **BC + PPO** | **73%** | **75.6%** | **2.3** |
+| Greedy (3) | 47% | 46.0% | 3.0 |
+| SFT + DPO | 30% | 62.2% | 1.0 |
+| BC | 58% | 72.1% | 2.1 |
+| **BC + PPO** | **62%** | **73.3%** | **2.0** |
 
 > **Note:** Retrieval F1 here is computed on the 60-question pre-filtered subset, not the full 1,499-question eval set. Values will differ from the main retrieval results table above.
 
-BC + PPO achieves the highest answer accuracy (+6% over BC, +15% over Best Greedy) while maintaining the best retrieval F1 and fewest reads.
+BC + PPO achieves the highest answer accuracy (+4% over BC, +15% over Greedy) while maintaining the best retrieval F1 and fewest reads.
 
 ---
 
@@ -235,17 +235,17 @@ To test generalization, we apply the models trained on 2WikiMultiHopQA directly 
 
 | Strategy | HotpotQA F1 | 2Wiki F1 | Δ |
 |---|---|---|---|
-| Best Greedy | 39.5% | 40.2% | −0.7% |
-| SFT + DPO | 38.3% | 51.7% | −13.4% |
-| BC | 59.8% | 74.8% | −15.0% |
-| **BC + PPO** | **61.2%** | **75.6%** | **−14.4%** |
+| Greedy (3) | 40.7% | 46.0% | −5.3% |
+| SFT + DPO | 52.2% | 62.2% | −10.0% |
+| BC | 59.0% | 72.1% | −13.1% |
+| **BC + PPO** | **60.3%** | **73.3%** | **−13.0%** |
 
 > **Note:** 2Wiki F1 is the same Retrieval F1 from the LLM Downstream table above (same 60-question subset). HotpotQA uses a separate set of 60 pre-filtered hard questions.
 
 Key findings:
-- **BC + PPO retains the highest absolute F1 on HotpotQA** (61.2%), confirming generalization
-- All learned policies degrade on transfer (Δ ≈ −13–15%), while Best Greedy's BoW heuristic is nearly dataset-agnostic (Δ = −0.7%)
-- DPO's over-stopping pathology (always reading 1 paragraph) hurts more on the new domain, dropping retrieval F1 from 51.7% to 38.3%
+- **BC + PPO retains the highest absolute F1 on HotpotQA** (60.3%), confirming generalization
+- All learned policies degrade on transfer (Δ ≈ −10–13%), while Greedy's BoW heuristic is more dataset-agnostic (Δ = −5.3%)
+- SFT+DPO transfers better than expected on HotpotQA (52.2% F1), narrowing the gap with BC — likely because its high-precision single-read strategy happens to select a gold paragraph more reliably on HotpotQA's 2-gold structure
 
 ---
 
@@ -271,9 +271,10 @@ Key findings:
 │   ├── sft_dpo_model.pt     #   SFT+DPO model weights
 │   ├── train_metrics.json   #   All training metrics, ROC data, significance tests
 │   └── *.png / *.csv        #   Training curves and plots
-└── results/                 # LLM evaluation outputs
+└── llm_eval_results/        # LLM evaluation outputs
     ├── llm_eval_report.txt  #   Formatted evaluation tables
-    └── llm_eval_results.json #  Machine-readable results
+    ├── llm_eval_results.json #  Machine-readable results
+    └── prefilter_cache_*.json # Cached pre-filter results
 ```
 
 ---

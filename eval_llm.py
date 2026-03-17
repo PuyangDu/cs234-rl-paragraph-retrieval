@@ -8,8 +8,8 @@ Group 1: 2WikiMultiHopQA (in-domain)
 Group 2: HotpotQA (zero-shot transfer)
 
 Outputs:
-  results/llm_eval_results.json   — full metrics for both datasets
-  results/llm_eval_report.txt     — formatted tables for paper
+  llm_eval_results/llm_eval_results.json   — full metrics for both datasets
+  llm_eval_results/llm_eval_report.txt     — formatted tables for paper
 
 Requires:
   - Ollama running with qwen3:8b
@@ -44,7 +44,7 @@ from multi_agent_baseline import RetrievalAgent
 # ======================================================================
 
 CKPT_DIR = "checkpoints_blind"
-OUT_DIR = "results"
+OUT_DIR = "llm_eval_results"
 K_BUDGET = 5
 
 
@@ -141,11 +141,12 @@ def eval_one_dataset(dataset_label, examples, models, n_target, cache_path):
     scorer = setup_scorer(hard)
     results = {}
 
-    # 1) Best Greedy
-    print(f"\n  [{dataset_label}] Best Greedy (searching K=1..7)...")
-    best_k, greedy_m = find_best_greedy_k(hard, scorer)
-    greedy_m["strategy"] = f"Best Greedy (K={best_k})"
-    results["Best Greedy"] = greedy_m
+    # 1) Greedy (K=3)
+    print(f"\n  [{dataset_label}] Greedy (K=3)...")
+    greedy_m, _ = run_baseline(hard, scorer, "greedy",
+                               max_reads=3, label="Greedy (3)")
+    greedy_m["strategy"] = "Greedy (3)"
+    results["Greedy (3)"] = greedy_m
 
     # 2) SFT+DPO
     print(f"\n  [{dataset_label}] SFT+DPO...")
@@ -319,7 +320,7 @@ def main(small=False):
     # ------------------------------------------------------------------
     print(f"\n[5/5] Generating report...")
 
-    strategies = ["Best Greedy", "SFT+DPO", "BC", "BC+PPO"]
+    strategies = ["Greedy (3)", "SFT+DPO", "BC", "BC+PPO"]
 
     report_lines = format_report(wiki2_results, hotpot_results,
                                  N_TARGET, strategies)

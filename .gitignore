@@ -9,8 +9,8 @@ checkpoints_blind/ppo_trajectories.json
 # Keep plots, CSV, txt, html, smaller JSON (train_metrics.json)
 # checkpoints_blind/*.png  <-- NOT ignored
 
-# Evaluation outputs
-results/
+# Evaluation outputs (keep report and results JSON, ignore caches)
+llm_eval_results/prefilter_cache_*.json
 
 # OS files
 .DS_Store

@@ -1,0 +1,39 @@
+======================================================================
+  LLM Evaluation Report
+  Generated: 2026-03-17 07:25:35
+  Questions per dataset: 60 (hard, pre-filtered)
+  LLM: qwen3:8b  |  Budget: K=5
+======================================================================
+
+  Table 1 — LLM Downstream Performance (2WikiMultiHopQA)
+  Strategy           Answer Acc  Retrieval F1  Reads
+  ────────────────── ────────── ───────────── ──────
+  Greedy (3)               47%        46.0%   3.0
+  SFT+DPO                  30%        62.2%   1.0
+  BC                       58%        72.1%   2.1
+  BC+PPO                   62%        73.3%   2.0
+
+  Table 2 — Zero-Shot Transfer (2WikiMultiHopQA → HotpotQA)
+  Strategy            HotpotQA F1  2Wiki F1       Δ
+  ────────────────── ──────────── ───────── ───────
+  Greedy (3)               40.7%    46.0% -5.3%
+  SFT+DPO                  52.2%    62.2% -10.0%
+  BC                       59.0%    72.1% -13.1%
+  BC+PPO                   60.3%    73.3% -13.0%
+
+  2WikiMultiHopQA — Detailed Metrics
+  Strategy             Acc   Prec    Rec     F1  Reads
+  ────────────────── ───── ────── ────── ────── ──────
+  Greedy (3)          47% 38.3% 57.5% 46.0%   3.0
+  SFT+DPO             30% 93.3% 46.7% 62.2%   1.0
+  BC                  58% 71.0% 73.3% 72.1%   2.1
+  BC+PPO              62% 73.3% 73.3% 73.3%   2.0
+
+  HotpotQA (transfer) — Detailed Metrics
+  Strategy             Acc   Prec    Rec     F1  Reads
+  ────────────────── ───── ────── ────── ────── ──────
+  Greedy (3)          50% 33.9% 50.8% 40.7%   3.0
+  SFT+DPO             52% 78.3% 39.2% 52.2%   1.0
+  BC                  57% 58.1% 60.0% 59.0%   2.1
+  BC+PPO              58% 59.8% 60.8% 60.3%   2.0
+
